@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Juergen Hoeller
@@ -37,6 +38,8 @@ class VetController {
 
     private final VetRepository vets;
 
+    private final AtomicLong counter = new AtomicLong();
+
     @Autowired
     public VetController(VetRepository clinicService) {
         this.vets = clinicService;
@@ -48,6 +51,11 @@ class VetController {
     public String showVetList(Map<String, Object> model) {
         // Here we are returning an object of type 'Vets' rather than a collection of Vet
         // objects so it is simpler for Object-Xml mapping
+
+        for (int i = 0; i < 1000000; i++) {
+            doSomething();
+        }
+        System.out.println("Done doing something...");
         Vets vets = new Vets();
         vets.getVetList().addAll(this.vets.findAll());
         model.put("vets", vets);
@@ -61,6 +69,10 @@ class VetController {
         Vets vets = new Vets();
         vets.getVetList().addAll(this.vets.findAll());
         return vets;
+    }
+
+    private void doSomething() {
+        counter.incrementAndGet();
     }
 
 }
